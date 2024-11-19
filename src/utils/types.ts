@@ -83,9 +83,7 @@ export type HardcoverList = {
 }
 
 export type BookDetailsProps = {
-    book: Book,
-    isAddToList?: boolean,
-    isRemoveFromList?: boolean
+    book: Book
 }
 
 export type AuthorDetailsProps = {
@@ -97,3 +95,7 @@ export type GetListsProps = {
     listsMustIncludeBook?: boolean,
     listsMustExcludeBook?: boolean
 };
+
+export type BookTitle = {
+    title: string
+}

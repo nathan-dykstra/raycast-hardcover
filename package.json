@@ -8,8 +8,14 @@
   "license": "MIT",
   "commands": [
     {
-      "name": "search-hardcover",
-      "title": "Search Hardcover",
+      "name": "search",
+      "title": "Search",
+      "description": "",
+      "mode": "view"
+    },
+    {
+      "name": "yourLists",
+      "title": "Your Lists",
       "description": "",
       "mode": "view"
     }

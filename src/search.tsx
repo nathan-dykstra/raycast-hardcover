@@ -1,4 +1,4 @@
-import { ActionPanel, Action, Icon, List, Keyboard, Alert, confirmAlert, LocalStorage, LaunchProps, Grid } from "@raycast/api";
+import { ActionPanel, Action, Icon, List, Keyboard, Alert, confirmAlert, LocalStorage, Grid } from "@raycast/api";
 import { useSearch } from "./utils/useSearch";
 import { ComponentProps, useEffect, useState } from "react";
 import { useCachedPromise } from "@raycast/utils";
@@ -59,7 +59,7 @@ function SearchCommand({ initialSearchText }: { initialSearchText?: string }) {
     );
 
     const sharedProps: ComponentProps<typeof List> = {
-        searchBarPlaceholder: "Search Hardcover...",
+        searchBarPlaceholder: "Search Hardcover",
         searchBarAccessory,
         searchText,
         onSearchTextChange: setSearchText,
@@ -155,9 +155,9 @@ function SearchCommand({ initialSearchText }: { initialSearchText?: string }) {
                                 key={book.id}
                                 icon={getBookImage(book)}
                                 title={book.title}
-                                subtitle={book.author || ""}
+                                subtitle={book.author}
                                 accessories={[
-                                    { icon: (book.releaseYear ? Icon.Calendar : ""), text: book.releaseYear?.toString() || "" },
+                                    { icon: (book.releaseYear ? Icon.Calendar : ""), text: book.releaseYear?.toString() },
                                 ]}
                                 actions={
                                     <ActionPanel>
@@ -195,8 +195,8 @@ function SearchCommand({ initialSearchText }: { initialSearchText?: string }) {
     }
 }
 
-export default function Command({ launchContext, fallbackText }: LaunchProps<{ launchContext: { query: string } }>) {
+export default function Command() {
     return (
-        <SearchCommand initialSearchText={launchContext?.query ?? fallbackText} />
+        <SearchCommand />
     );
 }
