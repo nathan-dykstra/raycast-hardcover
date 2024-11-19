@@ -1,20 +1,18 @@
-import { HardcoverList } from '../utils/types';
+import { GetListsProps, HardcoverList } from '../utils/types';
 import { fetchGraphQL } from './fetchEndpoint';
 
-type GetListsProps = {
-    bookId?: number,
-    listIncludesBook?: boolean,
-    listExcludesBook?: boolean
-};
-
-export async function getLists({ bookId, listIncludesBook, listExcludesBook }: GetListsProps): Promise<HardcoverList[]> {
+export async function getLists({
+    bookId,
+    listsMustIncludeBook,
+    listsMustExcludeBook 
+}: GetListsProps): Promise<HardcoverList[]> {
     const operation = `
         query GetLists {
             me {
                 lists(
                     ${
-                        bookId && listIncludesBook ? `where: { list_books: { book: { id: { _eq: ${bookId} } } } },` :
-                        bookId && listExcludesBook ? `where: { _not: { list_books: { book: { id: { _eq: ${bookId} } } } } },` :
+                        bookId && listsMustIncludeBook ? `where: { list_books: { book: { id: { _eq: ${bookId} } } } },` :
+                        bookId && listsMustExcludeBook ? `where: { _not: { list_books: { book: { id: { _eq: ${bookId} } } } } },` :
                         ""
                     }
                     order_by: { created_at: desc }

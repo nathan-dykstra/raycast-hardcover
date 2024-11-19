@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BookDetailsProps, HardcoverList } from "./types";
+import { BookDetailsProps, GetListsProps, HardcoverList } from "./types";
 import { addBookToList, getLists, removeBookFromList } from "../api/lists";
 import { Action, ActionPanel, Icon, List, open, showToast, Toast } from "@raycast/api";
 
@@ -11,11 +11,11 @@ export function ShowLists({ book, isAddToList = false, isRemoveFromList = false 
     useEffect(() => {
         async function fetchLists() {
             try {
-                let getListsProps = {};
+                let getListsProps: GetListsProps = {};
                 if (isAddToList) {
-                    getListsProps = { bookId: book.id, listExcludesBook: true };
+                    getListsProps = { bookId: book.id, listsMustExcludeBook: true };
                 } else if (isRemoveFromList) {
-                    getListsProps = { bookId: book.id, listIncludesBook: true };
+                    getListsProps = { bookId: book.id, listsMustIncludeBook: true };
                 }
                 const listsData = await getLists(getListsProps);
                 setLists(listsData);
@@ -42,7 +42,9 @@ export function ShowLists({ book, isAddToList = false, isRemoveFromList = false 
                     key={list.id}
                     title={list.name}
                     subtitle={list.list_books?.map((listBook) => listBook.book.title).join(" • ")}
-                    accessories={[{ icon: Icon.Book, text: `${list.books_count} books` }]}
+                    accessories={[
+                        { icon: Icon.Book, text: `${list.books_count} book` + (list.books_count === 1 ? "" : "s") }
+                    ]}
                     actions={
                         <ActionPanel>
                             {book && isAddToList && (

@@ -1,11 +1,11 @@
-import { Action, ActionPanel, closeMainWindow, Detail, Icon, open } from "@raycast/api";
+import { ActionPanel, Detail, Icon } from "@raycast/api";
 import { BookDetailsProps } from "./types";
 import { BookActions } from "./bookActions";
 
 
 export function BookDetails({ book }: BookDetailsProps) {
     return (
-        <Detail 
+        <Detail
             markdown={
                 " # " + book.title + "\n\n"
                 + (book.author ? " ## By " + book.author + "\n\n" : "")

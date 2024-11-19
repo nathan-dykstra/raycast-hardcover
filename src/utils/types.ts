@@ -1,7 +1,3 @@
-export type OperationMap = {
-    [operationName: string]: string;
-}
-
 export type HardcoverBook = {
     id: number,
     title: string,
@@ -9,20 +5,20 @@ export type HardcoverBook = {
     image: {
         url: string
     },
-    contributions: Array<{
+    contributions: {
         author: {
             name: string
         }
-    }>,
+    }[],
     release_year: number,
     users_count: number,
     rating: number,
     pages: number,
     cached_tags: {
-        Genre: Array<any> | null,
-        Mood: Array<any> | null,
-        "Content Warning": Array<any> | null,
-        Tag: Array<any> | null
+        Genre: any[] | null,
+        Mood: any[] | null,
+        "Content Warning": any[] | null,
+        Tag: any[] | null
     },
     slug: string
 }
@@ -38,12 +34,12 @@ export type HardcoverAuthor = {
     born_year: number,
     death_year: number,
     users_count: number,
-    contributions: Array<{
+    contributions: {
         book: {
             title: string,
             rating: number
         }
-    }>
+    }[]
 }
 
 export type Author = {
@@ -55,7 +51,7 @@ export type Author = {
     lifespan: string,
     usersCount: number,
     averageRating: number,
-    books: Array<string>
+    books: string[]
 }
 
 export type Book = {
@@ -68,7 +64,7 @@ export type Book = {
     usersCount: number,
     rating: number,
     pages: number,
-    genres: Array<string>,
+    genres: string[],
     slug: string
 }
 
@@ -77,13 +73,13 @@ export type HardcoverList = {
     name: string,
     books_count: number,
     slug: string,
-    list_books: Array<{
+    list_books: {
         id: number,
         book: {
             id: number,
             title: string
         }
-    }>
+    }[]
 }
 
 export type BookDetailsProps = {
@@ -95,3 +91,9 @@ export type BookDetailsProps = {
 export type AuthorDetailsProps = {
     author: Author
 }
+
+export type GetListsProps = {
+    bookId?: number,
+    listsMustIncludeBook?: boolean,
+    listsMustExcludeBook?: boolean
+};
