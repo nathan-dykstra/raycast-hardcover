@@ -2,8 +2,7 @@ import { ActionPanel, Detail, Icon } from "@raycast/api";
 import { BookDetailsProps } from "./types";
 import { BookActions } from "./bookActions";
 
-
-export function BookDetails({ book }: BookDetailsProps) {
+export function BookDetails({ book, lists }: BookDetailsProps) {
     return (
         <Detail
             markdown={
@@ -30,7 +29,7 @@ export function BookDetails({ book }: BookDetailsProps) {
             }
             actions={
                 <ActionPanel>
-                    <BookActions book={book} />
+                    <BookActions book={book} lists={lists} />
                 </ActionPanel>
             }
         />

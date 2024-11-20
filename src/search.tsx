@@ -1,4 +1,4 @@
-import { ActionPanel, Action, Icon, List, Keyboard, Alert, confirmAlert, LocalStorage, Grid } from "@raycast/api";
+import { ActionPanel, Action, Icon, List, Keyboard, Alert, confirmAlert, LocalStorage, Grid, showToast, Toast } from "@raycast/api";
 import { useSearch } from "./utils/useSearch";
 import { ComponentProps, useEffect, useState } from "react";
 import { useCachedPromise } from "@raycast/utils";
@@ -8,6 +8,8 @@ import { BookActions } from "./utils/bookActions";
 import { AuthorDetails } from "./utils/authorDetails";
 import { AuthorActions } from "./utils/authorActions";
 import { getAuthorImage, getBookImage } from "./utils/getItemImages";
+import { HardcoverList } from "./utils/types";
+import { getLists } from "./api/lists";
 
 const filters = {
     all: "All",
@@ -17,7 +19,23 @@ const filters = {
 
 type FilterValue = keyof typeof filters;
 
-function SearchCommand({ initialSearchText }: { initialSearchText?: string }) {
+function SearchCommand() {
+    const [lists, setLists] = useState<HardcoverList[]>([]);
+    const [listsIsLoading, setListsIsLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchLists() {
+            try {
+                const { lists: listsData } = await getLists();
+                setLists(listsData);
+            } catch (error) {
+                showToast({ style: Toast.Style.Failure, title: "Failed to load lists" });
+            } finally {
+                setListsIsLoading(false);
+            }
+        }
+        fetchLists();
+    }, []);
 
     const {
         data: recentSearchesData,
@@ -25,8 +43,7 @@ function SearchCommand({ initialSearchText }: { initialSearchText?: string }) {
         revalidate: recentSearchRevalidate,
     } = useCachedPromise(() => LocalStorage.getItem<string>("recent-searches"));
 
-    const [searchText, setSearchText] = useState<string>(initialSearchText || "");
-
+    const [searchText, setSearchText] = useState<string>("");
     const [searchFilter, setSearchFilter] = useState<FilterValue>("all");
 
     const { searchData, searchIsLoading } = useSearch({
@@ -63,7 +80,7 @@ function SearchCommand({ initialSearchText }: { initialSearchText?: string }) {
         searchBarAccessory,
         searchText,
         onSearchTextChange: setSearchText,
-        isLoading: searchIsLoading || recentSearchIsLoading,
+        isLoading: searchIsLoading || recentSearchIsLoading || listsIsLoading,
         throttle: true
     };
 
@@ -161,8 +178,8 @@ function SearchCommand({ initialSearchText }: { initialSearchText?: string }) {
                                 ]}
                                 actions={
                                     <ActionPanel>
-                                        <Action.Push icon={Icon.Eye} title="Show Details" target={<BookDetails book={book} />} />
-                                        <BookActions book={book} />
+                                        <Action.Push icon={Icon.Eye} title="Show Details" target={<BookDetails book={book} lists={lists} setLists={setLists} />} />
+                                        <BookActions book={book} lists={lists} setLists={setLists} />
                                     </ActionPanel>
                                 }
                             />

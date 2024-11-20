@@ -1,36 +1,19 @@
 import { BOOK_FIELDS_TO_RETURN, BOOK_READ_STATUS } from '../utils/constants';
 import { transformBooks } from '../utils/transformBooks';
-import { Book, BookTitle, GetListsProps, HardcoverBook, HardcoverList } from '../utils/types';
+import { Book, HardcoverBook, HardcoverList } from '../utils/types';
 import { fetchGraphQL } from './fetchEndpoint';
 
-export async function getLists({
-    bookId,
-    listsMustIncludeBook,
-    listsMustExcludeBook 
-}: GetListsProps): Promise<{ username: string, lists: HardcoverList[] }> {
+export async function getLists(): Promise<{ username: string, lists: HardcoverList[] }> {
     const operation = `
         query GetLists {
             me {
                 username
-                lists(
-                    ${
-                        bookId && listsMustIncludeBook ? `where: { list_books: { book: { id: { _eq: ${bookId} } } } },` :
-                        bookId && listsMustExcludeBook ? `where: { _not: { list_books: { book: { id: { _eq: ${bookId} } } } } },` :
-                        ""
-                    }
-                    order_by: { created_at: desc }
-                ) {
+                lists(order_by: { created_at: desc }) {
                 	id
                 	name
-                    books_count
+                    description
                     slug
-                	list_books(order_by: { date_added: desc }) {
-                        id
-                  	    book {
-                            id
-                    	    title
-                  	    }
-                    }
+                    books_count
                 }
             }
         }
@@ -87,16 +70,44 @@ export async function addBookToList(bookId: number, listId: number) {
     return fetchGraphQL(operation);
 }
 
-export async function removeBookFromList(listBookId: number) {
-    const operation = `
-        mutation RemoveBookFromList {
-            delete_list_book(id: ${listBookId}) {
-                id
+export async function removeBookFromList(bookId: number, listId: number) {
+    const getListBookIdOperation = `
+        query GetListBookId {
+            me {
+                lists(
+                    where: { id: { _eq: ${listId} } }
+                ) {
+                    list_books(
+                        where: { book_id: { _eq: ${bookId} } }
+                    ) {
+                        id
+                    }
+                }
             }
         }
     `;
 
-    return fetchGraphQL(operation);
+    try {
+        const response = await fetchGraphQL(getListBookIdOperation);
+        const listBookId = response?.data?.me[0].lists[0].list_books[0].id;
+
+        if (!listBookId) {
+            throw new Error('List book not found');
+        }
+
+        const removeBookFromListOperation = `
+            mutation RemoveBookFromList {
+                delete_list_book(id: ${listBookId}) {
+                    id
+                }
+            }
+        `;
+
+        return fetchGraphQL(removeBookFromListOperation);
+    } catch (error) {
+        console.error(error);
+        throw new Error('Failed to remove book from list');
+    }
 }
 
 export async function getBooksByStatus(statusId: number): Promise<Book[]> {
@@ -130,16 +141,17 @@ export async function getBooksByStatus(statusId: number): Promise<Book[]> {
     }
 }
 
-export async function getUserBooks(): Promise<{ wantToRead: BookTitle[], currentlyReading: BookTitle[], read: BookTitle[], didNotFinish: BookTitle[] }> {
+export async function getUserBooks(): Promise<{
+    wantToRead: number,
+    currentlyReading: number,
+    read: number,
+    didNotFinish: number 
+}> {
     const operation = `
         query GetBooksByStatus {
             me {
                 user_books {
                     status_id
-                    date_added
-                    book {
-                        title
-                    }
                 }
             }
         }
@@ -147,8 +159,6 @@ export async function getUserBooks(): Promise<{ wantToRead: BookTitle[], current
 
     type UserBook = {
         status_id: number,
-        date_added: string,
-        book: BookTitle
     };
 
     try {
@@ -157,23 +167,19 @@ export async function getUserBooks(): Promise<{ wantToRead: BookTitle[], current
 
         const wantToRead = userBooks
             .filter((userBook) => userBook.status_id === BOOK_READ_STATUS.WANT_TO_READ)
-            .sort((a, b) => new Date(b.date_added).getTime() - new Date(a.date_added).getTime())
-            .map((userBook) => userBook.book);
+            .length;
         
         const currentlyReading = userBooks
             .filter((userBook) => userBook.status_id === BOOK_READ_STATUS.CURRENTLY_READING)
-            .sort((a, b) => new Date(b.date_added).getTime() - new Date(a.date_added).getTime())
-            .map((userBook) => userBook.book);
+            .length;
 
         const read = userBooks
             .filter((userBook) => userBook.status_id === BOOK_READ_STATUS.READ)
-            .sort((a, b) => new Date(b.date_added).getTime() - new Date(a.date_added).getTime())
-            .map((userBook) => userBook.book);
+            .length;
 
         const didNotFinish = userBooks
             .filter((userBook) => userBook.status_id === BOOK_READ_STATUS.DID_NOT_FINISH)
-            .sort((a, b) => new Date(b.date_added).getTime() - new Date(a.date_added).getTime())
-            .map((userBook) => userBook.book);
+            .length;
 
         return { wantToRead, currentlyReading, read, didNotFinish };
     } catch (error) {
@@ -182,14 +188,14 @@ export async function getUserBooks(): Promise<{ wantToRead: BookTitle[], current
     }
 }
 
-/* 
-Status IDs:
-1: Want to Read
-2: Currently Reading
-3: Read
-5: Did Not Finish
-*/
 export async function changeBookReadStatus(bookId: number, statusId: number) {
+    /* 
+    Status IDs:
+     1: Want to Read
+     2: Currently Reading
+     3: Read
+     5: Did Not Finish
+    */
     const operation = `
         mutation ChangeBookReadStatus {
             insert_user_book(object: { book_id: ${bookId}, status_id: ${statusId} }) {

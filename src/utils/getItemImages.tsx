@@ -2,16 +2,16 @@ import { Icon, Image } from "@raycast/api"
 import { Author, Book } from "./types"
 
 export function getBookImage(book: Book): Image.ImageLike {
+    if (!book.image) return Icon.Book
     return {
         source: book.image,
-        fallback: Icon.Book
     }
 }
 
 export function getAuthorImage(author: Author): Image.ImageLike {
+    if (!author.image) return Icon.Person
     return {
         source: author.image,
-        fallback: Icon.Person,
         mask: author.image ? Image.Mask.Circle : undefined
     }
 }

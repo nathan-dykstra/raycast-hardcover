@@ -1,10 +1,9 @@
 import { Action, ActionPanel, closeMainWindow, Icon, open, showToast, Toast } from "@raycast/api";
 import { BookDetailsProps } from "./types";
-import { changeBookReadStatus } from "../api/lists";
+import { addBookToList, changeBookReadStatus, removeBookFromList } from "../api/lists";
 import { BOOK_READ_STATUS } from "./constants";
-import { ShowLists } from "./showLists";
 
-export function BookActions({ book }: BookDetailsProps) {
+export function BookActions({ book, lists }: BookDetailsProps) {
     return (
         <>
             <Action
@@ -17,8 +16,49 @@ export function BookActions({ book }: BookDetailsProps) {
                 }}
             />
             <ActionPanel.Section>
-                <Action.Push icon={Icon.PlusCircle} title="Add to List" target={<ShowLists book={book} isAddToList={true} />} />
-                <Action.Push icon={Icon.XMarkCircle} title="Remove from List" target={<ShowLists book={book} isRemoveFromList={true} />} />
+                <ActionPanel.Submenu icon={Icon.PlusCircle} title="Add to List">
+                    {lists?.map((list) => {
+                        return (
+                            <Action
+                                key={list.id}
+                                title={list.name}
+                                onAction={async () => {
+                                    const toast = await showToast({ style: Toast.Style.Animated, title: "Adding book to list..." });
+                                    try {
+                                        await addBookToList(book.id, list.id);
+                                        toast.style = Toast.Style.Success;
+                                        toast.title = `Book added to list '${list.name}'`;
+                                    } catch (error) {
+                                        toast.style = Toast.Style.Failure;
+                                        toast.title = "Failed to add book to list";
+                                    }
+                                }}
+                            />
+                        )
+                    })}
+                </ActionPanel.Submenu>
+                <ActionPanel.Submenu icon={Icon.XMarkCircle} title="Remove from List">
+                    {lists?.map((list) => {
+                        return (
+                            <Action
+                                key={list.id}
+                                title={list.name}
+                                onAction={async () => {
+                                    const toast = await showToast({ style: Toast.Style.Animated, title: "Removing book from list..." });
+                                    try {
+                                        console.log(book.id, list.id);
+                                        await removeBookFromList(book.id, list.id);
+                                        toast.style = Toast.Style.Success;
+                                        toast.title = `Book removed from list '${list.name}'`;
+                                    } catch (error) {
+                                        toast.style = Toast.Style.Failure;
+                                        toast.title = "Failed to remove book from list";
+                                    }
+                                }}
+                            />
+                        )
+                    })}
+                </ActionPanel.Submenu>
             </ActionPanel.Section>
             <ActionPanel.Section>
                 <Action

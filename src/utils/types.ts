@@ -71,31 +71,16 @@ export type Book = {
 export type HardcoverList = {
     id: number,
     name: string,
-    books_count: number,
+    description: string,
     slug: string,
-    list_books: {
-        id: number,
-        book: {
-            id: number,
-            title: string
-        }
-    }[]
+    books_count: number,
 }
 
 export type BookDetailsProps = {
-    book: Book
+    book: Book,
+    lists: HardcoverList[],
 }
 
 export type AuthorDetailsProps = {
     author: Author
-}
-
-export type GetListsProps = {
-    bookId?: number,
-    listsMustIncludeBook?: boolean,
-    listsMustExcludeBook?: boolean
-};
-
-export type BookTitle = {
-    title: string
 }

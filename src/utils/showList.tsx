@@ -15,11 +15,12 @@ const statusIdToNameMap = {
 }
 
 type ShowListProps = {
+    lists: HardcoverList[],
     list?: HardcoverList,
     statusId?: number
 }
 
-export function ShowList({ list = undefined, statusId = undefined }: ShowListProps) {
+export function ShowList({ lists, list = undefined, statusId = undefined }: ShowListProps) {
     const [listBooks, setListBooks] = useState<Book[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -60,8 +61,8 @@ export function ShowList({ list = undefined, statusId = undefined }: ShowListPro
                     ]}
                     actions={
                         <ActionPanel>
-                            <Action.Push icon={Icon.Eye} title="Show Details" target={<BookDetails book={book} />} />
-                            <BookActions book={book} />
+                            <Action.Push icon={Icon.Eye} title="Show Details" target={<BookDetails book={book} lists={lists} />} />
+                            <BookActions book={book} lists={lists} />
                         </ActionPanel>
                     }
                 />
