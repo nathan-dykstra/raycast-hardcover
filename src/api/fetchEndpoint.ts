@@ -1,6 +1,5 @@
 import fetch from "node-fetch";
 import { ENDPOINT, HARDCOVER_TOKEN } from "../utils/constants";
-import { HardcoverAuthor, HardcoverBook, HardcoverList } from "../utils/types";
 
 export async function fetchGraphQL(operation: string) {
     try {

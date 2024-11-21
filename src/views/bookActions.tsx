@@ -15,7 +15,7 @@ export function BookActions({ book, lists, setRefreshKey = undefined }: BookDeta
                     closeMainWindow();
                 }}
             />
-            <ActionPanel.Section>
+            <ActionPanel.Section title="Your Lists">
                 <ActionPanel.Submenu icon={Icon.PlusCircle} title="Add to List">
                     {lists?.map((list) => {
                         return (
@@ -59,7 +59,7 @@ export function BookActions({ book, lists, setRefreshKey = undefined }: BookDeta
                     })}
                 </ActionPanel.Submenu>
             </ActionPanel.Section>
-            <ActionPanel.Section>
+            <ActionPanel.Section title="Reading Status">
                 <Action
                     title="Want to Read"
                     icon={Icon.Bookmark}
@@ -125,7 +125,7 @@ export function BookActions({ book, lists, setRefreshKey = undefined }: BookDeta
                     }}
                 />
                 <Action
-                    title="Remove Reading Status"
+                    title="Remove"
                     icon={Icon.Trash}
                     onAction={async () => {
                         const toast = await showToast({ style: Toast.Style.Animated, title: "Removing book status..." });
