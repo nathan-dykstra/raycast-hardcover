@@ -1,9 +1,9 @@
 import { Action, ActionPanel, closeMainWindow, Icon, open, showToast, Toast } from "@raycast/api";
-import { BookDetailsProps } from "./types";
-import { addBookToList, changeBookReadStatus, removeBookFromList } from "../api/lists";
-import { BOOK_READ_STATUS } from "./constants";
+import { BookDetailsProps } from "../utils/types";
+import { addBookToList, changeBookReadStatus, removeBookFromList, removeBookReadStatus } from "../api/lists";
+import { BOOK_READ_STATUS } from "../utils/constants";
 
-export function BookActions({ book, lists }: BookDetailsProps) {
+export function BookActions({ book, lists, setRefreshKey = undefined }: BookDetailsProps) {
     return (
         <>
             <Action
@@ -46,7 +46,6 @@ export function BookActions({ book, lists }: BookDetailsProps) {
                                 onAction={async () => {
                                     const toast = await showToast({ style: Toast.Style.Animated, title: "Removing book from list..." });
                                     try {
-                                        console.log(book.id, list.id);
                                         await removeBookFromList(book.id, list.id);
                                         toast.style = Toast.Style.Success;
                                         toast.title = `Book removed from list '${list.name}'`;
@@ -70,6 +69,7 @@ export function BookActions({ book, lists }: BookDetailsProps) {
                             await changeBookReadStatus(book.id, BOOK_READ_STATUS.WANT_TO_READ);
                             toast.style = Toast.Style.Success;
                             toast.title = "Book marked as 'Want to Read'";
+                            if (setRefreshKey) setRefreshKey((prev) => prev + 1);
                         } catch (error) {
                             toast.style = Toast.Style.Failure;
                             toast.title = "Failed to update book status";
@@ -85,6 +85,7 @@ export function BookActions({ book, lists }: BookDetailsProps) {
                             await changeBookReadStatus(book.id, BOOK_READ_STATUS.CURRENTLY_READING);
                             toast.style = Toast.Style.Success;
                             toast.title = "Book marked as 'Currently Reading'";
+                            if (setRefreshKey) setRefreshKey((prev) => prev + 1);
                         } catch (error) {
                             toast.style = Toast.Style.Failure;
                             toast.title = "Failed to update book status";
@@ -100,6 +101,7 @@ export function BookActions({ book, lists }: BookDetailsProps) {
                             await changeBookReadStatus(book.id, BOOK_READ_STATUS.READ);
                             toast.style = Toast.Style.Success;
                             toast.title = "Book marked as 'Read'";
+                            if (setRefreshKey) setRefreshKey((prev) => prev + 1);
                         } catch (error) {
                             toast.style = Toast.Style.Failure;
                             toast.title = "Failed to update book status";
@@ -115,9 +117,26 @@ export function BookActions({ book, lists }: BookDetailsProps) {
                             await changeBookReadStatus(book.id, BOOK_READ_STATUS.DID_NOT_FINISH);
                             toast.style = Toast.Style.Success;
                             toast.title = "Book marked as 'Did Not Finish'";
+                            if (setRefreshKey) setRefreshKey((prev) => prev + 1);
                         } catch (error) {
                             toast.style = Toast.Style.Failure;
                             toast.title = "Failed to update book status";
+                        }
+                    }}
+                />
+                <Action
+                    title="Remove Reading Status"
+                    icon={Icon.Trash}
+                    onAction={async () => {
+                        const toast = await showToast({ style: Toast.Style.Animated, title: "Removing book status..." });
+                        try {
+                            await removeBookReadStatus(book.id);
+                            toast.style = Toast.Style.Success;
+                            toast.title = "Book status removed";
+                            if (setRefreshKey) setRefreshKey((prev) => prev + 1);
+                        } catch (error) {
+                            toast.style = Toast.Style.Failure;
+                            toast.title = "Failed to remove book status";
                         }
                     }}
                 />

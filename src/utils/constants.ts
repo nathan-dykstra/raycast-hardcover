@@ -2,11 +2,29 @@ import { getPreferenceValues } from "@raycast/api";
 
 const preferences = getPreferenceValues<Preferences>();
 
+export const USERNAME = preferences.hardcoverUsername;
+
 export const HARDCOVER_TOKEN = preferences.hardcoverToken;
 
 export const ENDPOINT = "https://api.hardcover.app/v1/graphql";
 
-export const BOOK_FIELDS_TO_RETURN = `
+export const SIMPLE_BOOK_FIELDS = `
+    id
+    title
+    release_year
+    image {
+        url
+    }
+    contributions {
+        author {
+            name
+        }
+    }
+    users_count
+    slug
+`;
+
+export const BOOK_FIELDS = `
     id
     title
     description
@@ -18,15 +36,28 @@ export const BOOK_FIELDS_TO_RETURN = `
             name
         }
     }
+    book_series {
+        series {
+            name
+            primary_books_count
+        }
+        position
+    }
     release_year
     users_count
     rating
     pages
     cached_tags
     slug
+    user_books(
+        where: { user: { username: { _eq: "${USERNAME}" } } }
+        limit: 1
+    ) {
+        status_id
+    }
 `;
 
-export const AUTHOR_FIELDS_TO_RETURN = `
+export const AUTHOR_FIELDS = `
     id
     name
     image {

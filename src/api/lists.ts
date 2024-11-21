@@ -1,9 +1,9 @@
-import { BOOK_FIELDS_TO_RETURN, BOOK_READ_STATUS } from '../utils/constants';
+import { BOOK_READ_STATUS, SIMPLE_BOOK_FIELDS, USERNAME } from '../utils/constants';
 import { transformBooks } from '../utils/transformBooks';
-import { Book, HardcoverBook, HardcoverList } from '../utils/types';
+import { HardcoverList, SimpleBook, SimpleHardcoverBook } from '../utils/types';
 import { fetchGraphQL } from './fetchEndpoint';
 
-export async function getLists(): Promise<{ username: string, lists: HardcoverList[] }> {
+export async function getLists(): Promise<HardcoverList[]> {
     const operation = `
         query GetLists {
             me {
@@ -21,21 +21,21 @@ export async function getLists(): Promise<{ username: string, lists: HardcoverLi
 
     try {
         const response = await fetchGraphQL(operation);
-        return { username: response?.data?.me[0].username, lists: response?.data?.me[0].lists };
+        return response?.data?.me[0].lists;
     } catch (error) {
         console.error(error);
         throw new Error('Failed to fetch lists');
     }
 }
 
-export async function getListBooks(listId: number): Promise<Book[]> {
+export async function getListBooks(listId: number): Promise<SimpleBook[]> {
     const operation = `
         query GetListBooks {
             me {
                 lists(where: { id: { _eq: ${listId} } }) {
                     list_books(order_by: { date_added: desc }) {
                         book {
-                            ${BOOK_FIELDS_TO_RETURN}
+                            ${SIMPLE_BOOK_FIELDS}
                         }
                     }
                 }
@@ -44,13 +44,13 @@ export async function getListBooks(listId: number): Promise<Book[]> {
     `;
 
     type ListBook = {
-        book: HardcoverBook
+        book: SimpleHardcoverBook
     };
 
     try {
         const response = await fetchGraphQL(operation);
         const listBooks: ListBook[] = response?.data?.me[0].lists[0].list_books || [];
-        const hardcoverBooks: HardcoverBook[] = listBooks.map((listBook) => listBook.book);
+        const hardcoverBooks: SimpleHardcoverBook[] = listBooks.map((listBook) => listBook.book);
         return transformBooks(hardcoverBooks);
     } catch (error) {
         console.error(error);
@@ -110,16 +110,16 @@ export async function removeBookFromList(bookId: number, listId: number) {
     }
 }
 
-export async function getBooksByStatus(statusId: number): Promise<Book[]> {
+export async function getBooksByStatus(statusId: number): Promise<SimpleBook[]> {
     const operation = `
         query GetBooksByStatus {
             me {
                 user_books(
                     where: { status_id: { _eq: ${statusId} } }
-                    order_by: { date_added: desc }
+                    order_by: { updated_at: desc }
                 ) {
                     book {
-                        ${BOOK_FIELDS_TO_RETURN}
+                        ${SIMPLE_BOOK_FIELDS}
                     }
                 }
             }
@@ -127,13 +127,13 @@ export async function getBooksByStatus(statusId: number): Promise<Book[]> {
     `;
 
     type UserBook = {
-        book: HardcoverBook
+        book: SimpleHardcoverBook
     };
 
     try {
         const response = await fetchGraphQL(operation);
         const userBooks: UserBook[] = response?.data?.me[0].user_books || [];
-        const hardcoverBooks: HardcoverBook[] = userBooks.map((userBook) => userBook.book);
+        const hardcoverBooks: SimpleHardcoverBook[] = userBooks.map((userBook) => userBook.book);
         return transformBooks(hardcoverBooks);
     } catch (error) {
         console.error(error);
@@ -148,7 +148,7 @@ export async function getUserBooks(): Promise<{
     didNotFinish: number 
 }> {
     const operation = `
-        query GetBooksByStatus {
+        query GetUserBooks {
             me {
                 user_books {
                     status_id
@@ -205,4 +205,38 @@ export async function changeBookReadStatus(bookId: number, statusId: number) {
     `;
 
     return fetchGraphQL(operation);
+}
+
+export async function removeBookReadStatus(bookId: number) {
+    const getUserBookOperation = `
+        query GetUserBookByBookId {
+            user_books(
+                where: {_and: [
+                    { user: { username: { _eq: "${USERNAME}" } } },
+                    { book_id: { _eq: ${bookId} } }
+                ]}
+            ) {
+                id
+            }
+        }
+    `;
+
+    try {
+        const response = await fetchGraphQL(getUserBookOperation);
+        const userBookId: number = response?.data?.user_books[0].id;
+        if (!userBookId) throw new Error('User book not found');
+
+        const removeUserBookOperation = `
+            mutation RemoveUserBook {
+                delete_user_book(id: ${userBookId}) {
+                    id
+                }
+            }
+        `;
+
+        return fetchGraphQL(removeUserBookOperation);
+    } catch (error) {
+        console.error(error);
+        throw new Error('Failed to remove user book');
+    }
 }

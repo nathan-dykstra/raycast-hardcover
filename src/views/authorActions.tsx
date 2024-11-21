@@ -1,5 +1,5 @@
 import { Action, closeMainWindow, Icon, open } from "@raycast/api";
-import { AuthorDetailsProps } from "./types";
+import { AuthorDetailsProps } from "../utils/types";
 
 
 export function AuthorActions({ author }: AuthorDetailsProps) {

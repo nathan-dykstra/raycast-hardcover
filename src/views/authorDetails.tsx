@@ -1,5 +1,5 @@
 import { ActionPanel, Detail, Icon } from "@raycast/api";
-import { AuthorDetailsProps } from "./types";
+import { AuthorDetailsProps } from "../utils/types";
 import { AuthorActions } from "./authorActions";
 
 export function AuthorDetails({ author }: AuthorDetailsProps) {

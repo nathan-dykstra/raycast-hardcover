@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import { HardcoverList } from "./utils/types";
 import { getLists, getUserBooks } from "./api/lists";
 import { Action, ActionPanel, Icon, List, open, showToast, Toast } from "@raycast/api";
-import { ShowList } from "./utils/showList";
-import { BOOK_READ_STATUS } from "./utils/constants";
+import { ShowList } from "./views/showList";
+import { BOOK_READ_STATUS, USERNAME } from "./utils/constants";
 
 function YourListsCommand() {
     const [lists, setLists] = useState<HardcoverList[]>([]);
-    const [username, setUsername] = useState("");
     const [wantToRead, setWantToRead] = useState<number>(0);
     const [currentlyReading, setCurrentlyReading] = useState<number>(0);
     const [read, setRead] = useState<number>(0);
@@ -17,8 +16,7 @@ function YourListsCommand() {
     useEffect(() => {
         async function fetchLists() {
             try {
-                const { username, lists: listsData } = await getLists();
-                setUsername(username);
+                const listsData = await getLists();
                 setLists(listsData);
                 const { wantToRead: wantToReadData, currentlyReading: currentlyReadingData, read: readData, didNotFinish: didNotFinishData } = await getUserBooks();
                 setWantToRead(wantToReadData);
@@ -50,7 +48,7 @@ function YourListsCommand() {
                                 title="View in Browser"
                                 icon={Icon.Globe}
                                 onAction={() => {
-                                    open(`https://hardcover.app/@${username}/books/want-to-read`);
+                                    open(`https://hardcover.app/@${USERNAME}/books/want-to-read`);
                                 }}
                             />
                         </ActionPanel>
@@ -68,7 +66,7 @@ function YourListsCommand() {
                                 title="View in Browser"
                                 icon={Icon.Globe}
                                 onAction={() => {
-                                    open(`https://hardcover.app/@${username}/books/currently-reading`);
+                                    open(`https://hardcover.app/@${USERNAME}/books/currently-reading`);
                                 }}
                             />
                         </ActionPanel>
@@ -86,7 +84,7 @@ function YourListsCommand() {
                                 title="View in Browser"
                                 icon={Icon.Globe}
                                 onAction={() => {
-                                    open(`https://hardcover.app/@${username}/books/read`);
+                                    open(`https://hardcover.app/@${USERNAME}/books/read`);
                                 }}
                             />
                         </ActionPanel>
@@ -104,7 +102,7 @@ function YourListsCommand() {
                                 title="View in Browser"
                                 icon={Icon.Globe}
                                 onAction={() => {
-                                    open(`https://hardcover.app/@${username}/books/did-not-finish`);
+                                    open(`https://hardcover.app/@${USERNAME}/books/did-not-finish`);
                                 }}
                             />
                         </ActionPanel>
@@ -125,7 +123,7 @@ function YourListsCommand() {
                                     title="View in Browser"
                                     icon={Icon.Globe}
                                     onAction={() => {
-                                        open(`https://hardcover.app/@${username}/lists/${list.slug}`);
+                                        open(`https://hardcover.app/@${USERNAME}/lists/${list.slug}`);
                                     }}
                                 />
                             </ActionPanel>

@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { Book, HardcoverList } from "./types"
+import { HardcoverList, SimpleBook } from "../utils/types"
 import { Action, ActionPanel, Icon, List, showToast, Toast } from "@raycast/api";
-import { getBookImage } from "./getItemImages";
+import { getBookImage } from "../utils/getItemImages";
 import { BookDetails } from "./bookDetails";
 import { BookActions } from "./bookActions";
 import { getBooksByStatus, getListBooks } from "../api/lists";
-import { BOOK_READ_STATUS } from "./constants";
+import { BOOK_READ_STATUS } from "../utils/constants";
 
 const statusIdToNameMap = {
     [BOOK_READ_STATUS.WANT_TO_READ]: "Want to Read",
@@ -21,8 +21,9 @@ type ShowListProps = {
 }
 
 export function ShowList({ lists, list = undefined, statusId = undefined }: ShowListProps) {
-    const [listBooks, setListBooks] = useState<Book[]>([]);
+    const [listBooks, setListBooks] = useState<SimpleBook[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [refreshKey, setRefreshKey] = useState(0);
 
     useEffect(() => {
         async function fetchList() {
@@ -41,7 +42,7 @@ export function ShowList({ lists, list = undefined, statusId = undefined }: Show
             }
         }
         fetchList();
-    }, []);
+    }, [refreshKey]);
 
     return (
         <List 
@@ -61,8 +62,8 @@ export function ShowList({ lists, list = undefined, statusId = undefined }: Show
                     ]}
                     actions={
                         <ActionPanel>
-                            <Action.Push icon={Icon.Eye} title="Show Details" target={<BookDetails book={book} lists={lists} />} />
-                            <BookActions book={book} lists={lists} />
+                            <Action.Push icon={Icon.Eye} title="Show Details" target={<BookDetails book={book} lists={lists} setListRefreshKey={setRefreshKey} />} />
+                            <BookActions book={book} lists={lists} setRefreshKey={setRefreshKey} />
                         </ActionPanel>
                     }
                 />

@@ -3,10 +3,10 @@ import { useSearch } from "./utils/useSearch";
 import { ComponentProps, useEffect, useState } from "react";
 import { useCachedPromise } from "@raycast/utils";
 import { debounce } from "./utils/debounce";
-import { BookDetails } from "./utils/bookDetails";
-import { BookActions } from "./utils/bookActions";
-import { AuthorDetails } from "./utils/authorDetails";
-import { AuthorActions } from "./utils/authorActions";
+import { BookDetails } from "./views/bookDetails";
+import { BookActions } from "./views/bookActions";
+import { AuthorDetails } from "./views/authorDetails";
+import { AuthorActions } from "./views/authorActions";
 import { getAuthorImage, getBookImage } from "./utils/getItemImages";
 import { HardcoverList } from "./utils/types";
 import { getLists } from "./api/lists";
@@ -26,7 +26,7 @@ function SearchCommand() {
     useEffect(() => {
         async function fetchLists() {
             try {
-                const { lists: listsData } = await getLists();
+                const listsData = await getLists();
                 setLists(listsData);
             } catch (error) {
                 showToast({ style: Toast.Style.Failure, title: "Failed to load lists" });
@@ -178,8 +178,8 @@ function SearchCommand() {
                                 ]}
                                 actions={
                                     <ActionPanel>
-                                        <Action.Push icon={Icon.Eye} title="Show Details" target={<BookDetails book={book} lists={lists} setLists={setLists} />} />
-                                        <BookActions book={book} lists={lists} setLists={setLists} />
+                                        <Action.Push icon={Icon.Eye} title="Show Details" target={<BookDetails book={book} lists={lists} />} />
+                                        <BookActions book={book} lists={lists} />
                                     </ActionPanel>
                                 }
                             />

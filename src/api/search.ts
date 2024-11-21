@@ -1,5 +1,5 @@
-import { BOOK_FIELDS_TO_RETURN, AUTHOR_FIELDS_TO_RETURN } from '../utils/constants';
-import { HardcoverBook, Book, HardcoverAuthor, Author } from '../utils/types';
+import { SIMPLE_BOOK_FIELDS, AUTHOR_FIELDS } from '../utils/constants';
+import { HardcoverAuthor, Author, SimpleHardcoverBook, SimpleBook } from '../utils/types';
 import { fetchGraphQL } from './fetchEndpoint';
 import { transformBooks } from '../utils/transformBooks';
 import { transformAuthors } from '../utils/transformAuthors';
@@ -15,7 +15,7 @@ export async function search({
     query,
     booksLimit = 15,
     authorsLimit = 15
-}: SearchProps): Promise<{ books: Book[], authors: Author[] }> {
+}: SearchProps): Promise<{ books: SimpleBook[], authors: Author[] }> {
     const defaultBookOperations = [
         `query SearchBooksTitle {
             books(
@@ -23,7 +23,7 @@ export async function search({
                 limit: ${booksLimit}
                 order_by: { users_count: desc }
             ) {
-                ${BOOK_FIELDS_TO_RETURN}
+                ${SIMPLE_BOOK_FIELDS}
             }
         }`,
         `query SearchBooksAuthor {
@@ -32,7 +32,7 @@ export async function search({
                 limit: ${booksLimit}
                 order_by: { users_count: desc }
             ) {
-                ${BOOK_FIELDS_TO_RETURN}
+                ${SIMPLE_BOOK_FIELDS}
             }
         }`,
         `query SearchBooksSeries {
@@ -41,7 +41,7 @@ export async function search({
                 limit: ${booksLimit}
                 order_by: { users_count: desc }
             ) {
-                ${BOOK_FIELDS_TO_RETURN}
+                ${SIMPLE_BOOK_FIELDS}
             }
         }`
     ];
@@ -53,7 +53,7 @@ export async function search({
                 limit: ${booksLimit}
                 order_by: { users_count: desc }
             ) {
-                ${BOOK_FIELDS_TO_RETURN}
+                ${SIMPLE_BOOK_FIELDS}
             }
         }`
     ];
@@ -65,7 +65,7 @@ export async function search({
                 limit: ${booksLimit}
                 order_by: { users_count: desc }
             ) {
-                ${BOOK_FIELDS_TO_RETURN}
+                ${SIMPLE_BOOK_FIELDS}
             }
         }`
     ];
@@ -77,7 +77,7 @@ export async function search({
                 limit: ${authorsLimit}
                 order_by: { users_count: desc }
             ) {
-                ${AUTHOR_FIELDS_TO_RETURN}
+                ${AUTHOR_FIELDS}
             }
         }`,
         `query SearchAuthorsBooks {
@@ -86,7 +86,7 @@ export async function search({
                 limit: ${authorsLimit}
                 order_by: { users_count: desc }
             ) {
-                ${AUTHOR_FIELDS_TO_RETURN}
+                ${AUTHOR_FIELDS}
             }
         }`,
         `query SearchAuthorsSeries {
@@ -95,7 +95,7 @@ export async function search({
                 limit: ${authorsLimit}
                 order_by: { users_count: desc }
             ) {
-                ${AUTHOR_FIELDS_TO_RETURN}
+                ${AUTHOR_FIELDS}
             }
         }`
     ];
@@ -107,7 +107,7 @@ export async function search({
                 limit: ${authorsLimit}
                 order_by: { users_count: desc }
             ) {
-                ${AUTHOR_FIELDS_TO_RETURN}
+                ${AUTHOR_FIELDS}
             }
         }`
     ];
@@ -119,14 +119,14 @@ export async function search({
                 limit: ${authorsLimit}
                 order_by: { users_count: desc }
             ) {
-                ${AUTHOR_FIELDS_TO_RETURN}
+                ${AUTHOR_FIELDS}
             }
         }`
     ];
 
     // Search Books
 
-    let hardcoverBooks: HardcoverBook[] = [];
+    let hardcoverBooks: SimpleHardcoverBook[] = [];
 
     await Promise.all(
         defaultBookOperations.map(async (operation) => {

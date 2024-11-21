@@ -2,22 +2,24 @@
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "hardcover",
   "title": "Hardcover",
-  "description": "",
-  "icon": "extension-icon.png",
+  "description": "Track your reading and discover new books with Hardcover!",
+  "icon": "main-icon.png",
   "author": "nathan-dykstra",
   "license": "MIT",
   "commands": [
     {
       "name": "search",
       "title": "Search",
-      "description": "",
-      "mode": "view"
+      "description": "Search Hardcover for books and authors. Search by title, author, series, or ISBN.",
+      "mode": "view",
+      "icon": "main-icon.png"
     },
     {
       "name": "yourLists",
       "title": "Your Lists",
-      "description": "",
-      "mode": "view"
+      "description": "View your Hardcover lists.",
+      "mode": "view",
+      "icon": "main-icon.png"
     }
   ],
   "preferences": [
@@ -27,6 +29,13 @@
       "required": true,
       "description": "Your Hardcover API token",
       "type": "password"
+    },
+    {
+      "name": "hardcoverUsername",
+      "title": "Hardcover Username",
+      "required": true,
+      "description": "Your Hardcover username (without the '@')",
+      "type": "textfield"
     }
   ],
   "dependencies": {

@@ -1,7 +1,7 @@
 import { Icon, Image } from "@raycast/api"
-import { Author, Book } from "./types"
+import { Author, Book, SimpleBook } from "./types"
 
-export function getBookImage(book: Book): Image.ImageLike {
+export function getBookImage(book: SimpleBook | Book): Image.ImageLike {
     if (!book.image) return Icon.Book
     return {
         source: book.image,
