@@ -85,3 +85,10 @@ export const BOOK_READ_STATUS = {
     READ: 3,
     DID_NOT_FINISH: 5
 }
+
+export const BOOK_READ_STATUS_TO_NAME_MAP = {
+    [BOOK_READ_STATUS.WANT_TO_READ]: "Want to Read",
+    [BOOK_READ_STATUS.CURRENTLY_READING]: "Currently Reading",
+    [BOOK_READ_STATUS.READ]: "Read",
+    [BOOK_READ_STATUS.DID_NOT_FINISH]: "Did Not Finish"
+}

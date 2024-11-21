@@ -1,7 +1,7 @@
 import { Action, ActionPanel, closeMainWindow, Icon, open, showToast, Toast } from "@raycast/api";
 import { BookDetailsProps } from "../utils/types";
 import { addBookToList, changeBookReadStatus, removeBookFromList, removeBookReadStatus } from "../api/lists";
-import { BOOK_READ_STATUS } from "../utils/constants";
+import { BOOK_READ_STATUS, BOOK_READ_STATUS_TO_NAME_MAP } from "../utils/constants";
 
 export function BookActions({ book, lists, setRefreshKey = undefined }: BookDetailsProps) {
     return (
@@ -62,14 +62,14 @@ export function BookActions({ book, lists, setRefreshKey = undefined }: BookDeta
             </ActionPanel.Section>
             <ActionPanel.Section title="Reading Status">
                 <Action
-                    title="Want to Read"
+                    title={BOOK_READ_STATUS_TO_NAME_MAP[BOOK_READ_STATUS.WANT_TO_READ]}
                     icon={Icon.Bookmark}
                     onAction={async () => {
                         const toast = await showToast({ style: Toast.Style.Animated, title: "Updating book status..." });
                         try {
                             await changeBookReadStatus(book.id, BOOK_READ_STATUS.WANT_TO_READ);
                             toast.style = Toast.Style.Success;
-                            toast.title = "Book marked as 'Want to Read'";
+                            toast.title = `Book marked as '${BOOK_READ_STATUS_TO_NAME_MAP[BOOK_READ_STATUS.WANT_TO_READ]}'`;
                             if (setRefreshKey) setRefreshKey((prev) => prev + 1);
                         } catch (error) {
                             toast.style = Toast.Style.Failure;
@@ -78,14 +78,14 @@ export function BookActions({ book, lists, setRefreshKey = undefined }: BookDeta
                     }}
                 />
                 <Action
-                    title="Currently Reading"
+                    title={BOOK_READ_STATUS_TO_NAME_MAP[BOOK_READ_STATUS.CURRENTLY_READING]}
                     icon={Icon.Book}
                     onAction={async () => {
                         const toast = await showToast({ style: Toast.Style.Animated, title: "Updating book status..." });
                         try {
                             await changeBookReadStatus(book.id, BOOK_READ_STATUS.CURRENTLY_READING);
                             toast.style = Toast.Style.Success;
-                            toast.title = "Book marked as 'Currently Reading'";
+                            toast.title = `Book marked as '${BOOK_READ_STATUS_TO_NAME_MAP[BOOK_READ_STATUS.CURRENTLY_READING]}'`;
                             if (setRefreshKey) setRefreshKey((prev) => prev + 1);
                         } catch (error) {
                             toast.style = Toast.Style.Failure;
@@ -94,14 +94,14 @@ export function BookActions({ book, lists, setRefreshKey = undefined }: BookDeta
                     }}
                 />
                 <Action
-                    title="Read"
+                    title={BOOK_READ_STATUS_TO_NAME_MAP[BOOK_READ_STATUS.READ]}
                     icon={Icon.CheckCircle}
                     onAction={async () => {
                         const toast = await showToast({ style: Toast.Style.Animated, title: "Updating book status..." });
                         try {
                             await changeBookReadStatus(book.id, BOOK_READ_STATUS.READ);
                             toast.style = Toast.Style.Success;
-                            toast.title = "Book marked as 'Read'";
+                            toast.title = `Book marked as '${BOOK_READ_STATUS_TO_NAME_MAP[BOOK_READ_STATUS.READ]}'`;
                             if (setRefreshKey) setRefreshKey((prev) => prev + 1);
                         } catch (error) {
                             toast.style = Toast.Style.Failure;
@@ -110,14 +110,14 @@ export function BookActions({ book, lists, setRefreshKey = undefined }: BookDeta
                     }}
                 />
                 <Action
-                    title="Did Not Finish"
+                    title={BOOK_READ_STATUS_TO_NAME_MAP[BOOK_READ_STATUS.DID_NOT_FINISH]}
                     icon={Icon.XMarkCircle}
                     onAction={async () => {
                         const toast = await showToast({ style: Toast.Style.Animated, title: "Updating book status..." });
                         try {
                             await changeBookReadStatus(book.id, BOOK_READ_STATUS.DID_NOT_FINISH);
                             toast.style = Toast.Style.Success;
-                            toast.title = "Book marked as 'Did Not Finish'";
+                            toast.title = `Book marked as '${BOOK_READ_STATUS_TO_NAME_MAP[BOOK_READ_STATUS.DID_NOT_FINISH]}'`;
                             if (setRefreshKey) setRefreshKey((prev) => prev + 1);
                         } catch (error) {
                             toast.style = Toast.Style.Failure;

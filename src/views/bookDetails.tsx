@@ -1,7 +1,7 @@
 import { ActionPanel, Detail, Icon, showToast, Toast } from "@raycast/api";
 import { Book, BookDetailsProps } from "../utils/types";
 import { BookActions } from "./bookActions";
-import { BOOK_READ_STATUS } from "../utils/constants";
+import { BOOK_READ_STATUS, BOOK_READ_STATUS_TO_NAME_MAP } from "../utils/constants";
 import { useEffect, useState } from "react";
 import { getBook } from "../api/book";
 
@@ -48,22 +48,22 @@ export function BookDetails({ book, lists, setListRefreshKey = undefined }: Book
     
                                     switch (bookDetails.readStatus) {
                                         case BOOK_READ_STATUS.WANT_TO_READ:
-                                            text = "Want to Read";
+                                            text = BOOK_READ_STATUS_TO_NAME_MAP[BOOK_READ_STATUS.WANT_TO_READ];
                                             icon = Icon.Bookmark;
                                             colour = "#FACC14";
                                             break;
                                         case BOOK_READ_STATUS.CURRENTLY_READING:
-                                            text = "Currently Reading";
+                                            text = BOOK_READ_STATUS_TO_NAME_MAP[BOOK_READ_STATUS.CURRENTLY_READING];
                                             icon = Icon.Book;
                                             colour = "#22C55D";
                                             break;
                                         case BOOK_READ_STATUS.READ:
-                                            text = "Read";
+                                            text = BOOK_READ_STATUS_TO_NAME_MAP[BOOK_READ_STATUS.READ];
                                             icon = Icon.CheckCircle;
                                             colour = "#49DE80";
                                             break;
                                         case BOOK_READ_STATUS.DID_NOT_FINISH:
-                                            text = "Did Not Finish";
+                                            text = BOOK_READ_STATUS_TO_NAME_MAP[BOOK_READ_STATUS.DID_NOT_FINISH];
                                             icon = Icon.XMarkCircle;
                                             colour = "#6466F1";
                                             break;

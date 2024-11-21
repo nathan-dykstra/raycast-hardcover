@@ -5,14 +5,7 @@ import { getBookImage } from "../utils/getItemImages";
 import { BookDetails } from "./bookDetails";
 import { BookActions } from "./bookActions";
 import { getBooksByStatus, getListBooks } from "../api/lists";
-import { BOOK_READ_STATUS } from "../utils/constants";
-
-const statusIdToNameMap = {
-    [BOOK_READ_STATUS.WANT_TO_READ]: "Want to Read",
-    [BOOK_READ_STATUS.CURRENTLY_READING]: "Currently Reading",
-    [BOOK_READ_STATUS.READ]: "Read",
-    [BOOK_READ_STATUS.DID_NOT_FINISH]: "Did Not Finish"
-}
+import { BOOK_READ_STATUS_TO_NAME_MAP } from "../utils/constants";
 
 type ShowListProps = {
     lists: HardcoverList[],
@@ -45,10 +38,10 @@ export function ShowList({ lists, list = undefined, statusId = undefined }: Show
     }, [refreshKey]);
 
     return (
-        <List 
+        <List
             isLoading={isLoading}
-            navigationTitle={list?.name || (statusId ? statusIdToNameMap[statusId] : "")}
-            searchBarPlaceholder={`Search ${list?.name || (statusId ? statusIdToNameMap[statusId] : "List")}`}
+            navigationTitle={list?.name || (statusId ? BOOK_READ_STATUS_TO_NAME_MAP[statusId] : "")}
+            searchBarPlaceholder={`Search ${list?.name || (statusId ? BOOK_READ_STATUS_TO_NAME_MAP[statusId] : "List")}`}
         >
             <List.EmptyView title="This list is empty" />
             {listBooks.map((book) => (
