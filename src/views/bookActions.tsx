@@ -49,6 +49,7 @@ export function BookActions({ book, lists, setRefreshKey = undefined }: BookDeta
                                         await removeBookFromList(book.id, list.id);
                                         toast.style = Toast.Style.Success;
                                         toast.title = `Book removed from list '${list.name}'`;
+                                        if (setRefreshKey) setRefreshKey((prev) => prev + 1);
                                     } catch (error) {
                                         toast.style = Toast.Style.Failure;
                                         toast.title = "Failed to remove book from list";
@@ -127,6 +128,7 @@ export function BookActions({ book, lists, setRefreshKey = undefined }: BookDeta
                 <Action
                     title="Remove"
                     icon={Icon.Trash}
+                    style={Action.Style.Destructive}
                     onAction={async () => {
                         const toast = await showToast({ style: Toast.Style.Animated, title: "Removing book status..." });
                         try {

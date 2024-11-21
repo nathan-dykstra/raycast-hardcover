@@ -5,7 +5,7 @@ import { BOOK_READ_STATUS } from "../utils/constants";
 import { useEffect, useState } from "react";
 import { getBook } from "../api/book";
 
-export function BookDetails({ book, lists, setListRefreshKey }: BookDetailsProps) {
+export function BookDetails({ book, lists, setListRefreshKey = undefined }: BookDetailsProps) {
     const [bookDetails, setBookDetails] = useState<Book>();
     const [isLoading, setIsLoading] = useState(true);
     const [refreshKey, setRefreshKey] = useState(0);
@@ -33,11 +33,11 @@ export function BookDetails({ book, lists, setListRefreshKey }: BookDetailsProps
                 isLoading={isLoading}
                 navigationTitle={bookDetails.title || ""}
                 markdown={
-                    " # " + bookDetails.title + "\n\n"
-                    + (bookDetails.author ? " ## By " + bookDetails.author + "\n\n" : "")
+                    "# " + bookDetails.title + "\n\n"
+                    + (bookDetails.author ? "## By " + bookDetails.author + "\n\n" : "")
                     + (bookDetails.series.length ? (bookDetails.series.join("\n\n") + "\n\n") : "")
                     + (bookDetails.image ? "![](" + bookDetails.image + ")\n\n" : "")
-                    + bookDetails.description || ""
+                    + (bookDetails.description ? "## Summary" + "\n\n" + bookDetails.description + "\n\n" : "")
                 }
                 metadata={
                     <Detail.Metadata>
@@ -94,5 +94,5 @@ export function BookDetails({ book, lists, setListRefreshKey }: BookDetailsProps
             />
         )
     }
-    return <Detail isLoading={true} navigationTitle={book.title || ""} />
+    return <Detail isLoading={isLoading} navigationTitle={book.title || ""} />
 }

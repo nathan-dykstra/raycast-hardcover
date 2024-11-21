@@ -27,7 +27,10 @@ export const transformBook = (book: HardcoverBook): Book => {
         rating: Math.round(book.rating * 10) / 10,
         pages: book.pages,
         genres: (book.cached_tags.Genre || []).slice(0, 3).map((genre) => titleCase(genre.tag)),
-        series: (book.book_series || []).slice(0, 3).map((bookSeries) => `\\#${bookSeries.position} of ${bookSeries.series.primary_books_count} in ${bookSeries.series.name}`),
+        series: (book.book_series || [])
+            .filter((bookSeries) => bookSeries.series.primary_books_count && bookSeries.position)
+            .slice(0, 3)
+            .map((bookSeries) => `\\#${bookSeries.position} of ${bookSeries.series.primary_books_count} in ${bookSeries.series.name}`),
         slug: book.slug,
         readStatus: book.user_books[0]?.status_id || 0
     };
